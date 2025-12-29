@@ -1,4 +1,5 @@
 import type {FC} from "react";
+import {FormattedAmount} from "../../common/FormattedAmount.tsx"
 
 type Props = {
     amount: number
@@ -7,7 +8,7 @@ type Props = {
 export const TotalLimit:FC<Props> = ({amount}) => {
     return (
         <div>
-            <div>{amount}</div>
+            <b><FormattedAmount amount={amount} /></b>
         </div>
     )
 }

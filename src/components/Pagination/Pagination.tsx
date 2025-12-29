@@ -14,8 +14,12 @@ export const Pagination = ({page, pageSize, totalPages, totalItems, pageSizeVari
     const startItem = (page - 1) * pageSize + 1
     const endItem = Math.min(page * pageSize, totalItems)
 
-    const goPrev = () => setPage(Math.max(1, page - 1))
-    const goNext = () => setPage(Math.min(totalPages, page + 1))
+    const goPrev = () => {
+        setPage(Math.max(1, page - 1))
+    }
+    const goNext = () => {
+        setPage(Math.min(totalPages, page + 1))
+    }
 
     return (
         <div className="flex items-center justify-end gap-7 mt-4 p-4">

@@ -5,9 +5,11 @@ type Props = {
 }
 
 export const CreatedDate:FC<Props> = ({date}) => {
+    const formattedDate = new Date(date);
+
     return (
         <div>
-            <div>{date}</div>
+            <div>{formattedDate.toLocaleString("uk-UA").replace(",", "")}</div>
         </div>
     )
 }
