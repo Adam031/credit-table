@@ -15,3 +15,8 @@ export type Credit = {
     debtAmount: number
     status: CreditStatus
 }
+
+export type PaginationMeta = {
+    pageSize: number
+    pageSizeVariants: Array<number>
+}
