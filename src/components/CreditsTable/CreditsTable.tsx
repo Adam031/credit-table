@@ -8,8 +8,11 @@ import type {Credit} from "../../mock-data/types.ts"
 import {creditsColumns} from "./columns.tsx"
 import {Checkbox, ListItemText, MenuItem, Select} from "@mui/material"
 import resetIcon from '../../assets/reset.svg'
+import {Preloader} from "../Preloader/Preloader.tsx"
 
 export const CreditsTable = () => {
+    if (!creditsMock.length) return <Preloader />
+
     const [searchParams, setSearchParams] = useSearchParams()
 
     //columns visibility
@@ -36,6 +39,41 @@ export const CreditsTable = () => {
         setVisibleColumns(visibleColumnsKeys)
     }
 
+    // status filter
+    const statusValues = ['new', 'active', 'paid']
+    const statusFromUrl = searchParams.get("status")
+    const [filteredStatusValues, setFilteredStatusValues] = useState<string[]>(
+        statusFromUrl
+            ? statusFromUrl.split(",")
+            : statusValues
+    )
+
+    const onStatusFiltering = (e: any) => {
+        const value = typeof e.target.value === "string"
+            ? e.target.value.split(",")
+            : e.target.value
+
+        setFilteredStatusValues(value)
+
+        setSearchParams({
+            page: "1",
+            pageSize: String(pageSize),
+            sortKey,
+            sortOrder,
+            status: value.join(","),
+        })
+    }
+
+    const filteredCredits = useMemo(() => {
+        return creditsMock.filter(credit =>
+            filteredStatusValues.includes(credit.status)
+        )
+    }, [filteredStatusValues])
+
+    const resetStatusFilter = () => {
+        setFilteredStatusValues(statusValues)
+    }
+
     //sorting
     const urlSortKey = searchParams.get("sortKey") as keyof Credit | null
     const urlSortOrder = searchParams.get("sortOrder") || "asc"
@@ -57,9 +95,7 @@ export const CreditsTable = () => {
     }
 
     const sortedCredits = useMemo(() => {
-        if (!sortKey) return creditsMock
-
-        return [...creditsMock].sort((a, b) => {
+        return [...filteredCredits].sort((a, b) => {
             let aValue = a[sortKey]
             let bValue = b[sortKey]
 
@@ -72,7 +108,7 @@ export const CreditsTable = () => {
             if (aValue > bValue) return sortOrder === "asc" ? 1 : -1
             return 0
         })
-    }, [sortKey, sortOrder])
+    }, [filteredCredits, sortKey, sortOrder])
 
     //pagination
     const pageSizeVariants = creditsTablePaginationMock.pageSizeVariants
@@ -80,7 +116,7 @@ export const CreditsTable = () => {
     const page = Number(searchParams.get("page") || "1")
     const pageSize = Number(searchParams.get("pageSize") || String(creditsTablePaginationMock.pageSize))
 
-    const totalItems = creditsMock.length;
+    const totalItems = filteredCredits.length;
     const totalPages = Math.ceil(totalItems / pageSize)
 
     const setPageAndUpdateUrl = (newPage: number) => {
@@ -99,22 +135,43 @@ export const CreditsTable = () => {
 
     return (
         <>
-            <div className="flex justify-end w-full px-4">
-                <img src={resetIcon} width={20} height={20} alt="reset icon" className="cursor-pointer" onClick={resetColumnsVisibility} />
-                <Select
-                    multiple
-                    className="w-10 h-5 overflow-hidden ml-3"
-                    value={visibleColumns}
-                    onChange={(e) => onSelectChange(e)}
-                    renderValue={() => ''}
-                >
-                    {creditsColumns.map((column) => (
-                        <MenuItem key={column.key} value={column.key}>
-                            <Checkbox checked={visibleColumns.includes(column.key)} />
-                            <ListItemText primary={column.key} />
-                        </MenuItem>
-                    ))}
-                </Select>
+            <div className="flex justify-between w-full pl-4">
+                <div className="flex mt-5">
+                    Filters:
+                    <Select
+                        multiple
+                        className="h-7 overflow-hidden ml-3"
+                        value={filteredStatusValues}
+                        onChange={(e) => onStatusFiltering(e)}
+                        renderValue={() => 'Status'}
+                    >
+                        {statusValues.map((value) => (
+                            <MenuItem key={value} value={value}>
+                                <Checkbox checked={filteredStatusValues.includes(value)} />
+                                <ListItemText primary={value} />
+                            </MenuItem>
+                        ))}
+                    </Select>
+                    <img src={resetIcon} width={20} height={20} alt="reset icon" className="cursor-pointer flex ml-4" onClick={resetStatusFilter} />
+                </div>
+
+                <div className="flex mt-5 pr-4">
+                    <img src={resetIcon} width={20} height={20} alt="reset icon" className="cursor-pointer" onClick={resetColumnsVisibility} />
+                    <Select
+                        multiple
+                        className="h-7 overflow-hidden ml-3"
+                        value={visibleColumns}
+                        onChange={(e) => onSelectChange(e)}
+                        renderValue={() => 'Visibility'}
+                    >
+                        {creditsColumns.map((column) => (
+                            <MenuItem key={column.key} value={column.key}>
+                                <Checkbox checked={visibleColumns.includes(column.key)} />
+                                <ListItemText primary={column.key} />
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </div>
             </div>
 
             <table className="table-fixed w-full mt-5">

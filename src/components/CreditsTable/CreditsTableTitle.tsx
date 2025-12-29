@@ -1,6 +1,6 @@
 import {creditsMock} from "../../mock-data/mock-data.ts";
 
-export const HeaderTitle = () => {
+export const CreditsTableTitle = () => {
     const creditsCount = creditsMock.length
 
     return (

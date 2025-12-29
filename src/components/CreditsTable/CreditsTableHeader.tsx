@@ -1,5 +1,6 @@
 import {creditsColumns} from "./columns.tsx";
 import type {Credit} from "../../mock-data/types.ts"
+import {Preloader} from "../Preloader/Preloader.tsx"
 
 type Props = {
     setSort: (key: keyof Credit) => void
@@ -9,6 +10,8 @@ type Props = {
 }
 
 export const CreditsTableHeader = ({ setSort, sortKey, sortOrder, visibleColumns } : Props) => {
+    if (!creditsColumns.length) return <Preloader />
+
     return (
         <thead className="border-t border-b border-gray-300">
             <tr>
