@@ -1,43 +1,22 @@
-import {CreditsTableHeader} from "./CreditsTableHeader.tsx";
-import {CreditsTableRow} from "./CreditsTableRow.tsx";
 import {creditsMock, creditsTablePaginationMock} from "../../mock-data/mock-data.ts";
-import {useEffect, useMemo, useState} from "react";
+import {useMemo, useState} from "react";
 import {Pagination} from "../Pagination/Pagination.tsx";
 import {useSearchParams} from "react-router-dom";
 import type {Credit} from "../../mock-data/types.ts"
 import {creditsColumns} from "./columns.tsx"
-import {Checkbox, ListItemText, MenuItem, Select} from "@mui/material"
-import resetIcon from '../../assets/reset.svg'
 import {Preloader} from "../Preloader/Preloader.tsx"
+import {StatusFilter} from "../Filters/StatusFilter.tsx"
+import {ColumnsVisibility} from "../Filters/ColumnsVisibility.tsx"
+import {CreditsTableView} from "./CreditsTableView.tsx"
+import {useColumnVisibility} from "../hooks/useColumnVisibility.ts"
 
 export const CreditsTable = () => {
     if (!creditsMock.length) return <Preloader />
 
     const [searchParams, setSearchParams] = useSearchParams()
 
-    //columns visibility
-    const visibleColumnsKeys = creditsColumns.map(column => column.key)
-
-    const [visibleColumns, setVisibleColumns] = useState<string[]>(() => {
-        const saved = localStorage.getItem("visibleColumns")
-        return saved ? JSON.parse(saved) : visibleColumnsKeys
-    })
-
-    useEffect(() => {
-        localStorage.setItem("visibleColumns", JSON.stringify(visibleColumns))
-    }, [visibleColumns])
-
-    const onSelectChange = (e:any) => {
-        const value = typeof e.target.value === "string"
-            ? e.target.value.split(",")
-            : e.target.value
-
-        setVisibleColumns(value)
-    }
-
-    const resetColumnsVisibility = () => {
-        setVisibleColumns(visibleColumnsKeys)
-    }
+    const { visibleColumns, setVisibleColumns, reset: resetColumnsVisibility } =
+        useColumnVisibility(creditsColumns.map(c => c.key))
 
     // status filter
     const statusValues = ['new', 'active', 'paid']
@@ -48,19 +27,15 @@ export const CreditsTable = () => {
             : statusValues
     )
 
-    const onStatusFiltering = (e: any) => {
-        const value = typeof e.target.value === "string"
-            ? e.target.value.split(",")
-            : e.target.value
-
-        setFilteredStatusValues(value)
+    const onStatusFiltering = (values: string[]) => {
+        setFilteredStatusValues(values)
 
         setSearchParams({
             page: "1",
             pageSize: String(pageSize),
             sortKey,
             sortOrder,
-            status: value.join(","),
+            status: values.join(","),
         })
     }
 
@@ -75,14 +50,8 @@ export const CreditsTable = () => {
     }
 
     //sorting
-    const urlSortKey = searchParams.get("sortKey") as keyof Credit | null
-    const urlSortOrder = searchParams.get("sortOrder") || "asc"
-
-    const defaultSortKey: keyof Credit = "id"
-    const defaultSortOrder: "asc" | "desc" = "asc"
-
-    const sortKey = urlSortKey || defaultSortKey
-    const sortOrder = urlSortKey ? urlSortOrder : defaultSortOrder
+    const sortKey = searchParams.get("sortKey") as keyof Credit || "id"
+    const sortOrder = (searchParams.get("sortOrder") as "asc" | "desc") || "asc"
 
     const setSort = (key: keyof Credit) => {
         const newOrder = sortKey === key && sortOrder === "asc" ? "desc" : "asc";
@@ -90,7 +59,8 @@ export const CreditsTable = () => {
             page: "1",
             pageSize: String(pageSize),
             sortKey: key,
-            sortOrder: newOrder
+            sortOrder: newOrder,
+            status: filteredStatusValues
         })
     }
 
@@ -136,50 +106,27 @@ export const CreditsTable = () => {
     return (
         <>
             <div className="flex justify-between w-full pl-4">
-                <div className="flex mt-5">
-                    Filters:
-                    <Select
-                        multiple
-                        className="h-7 overflow-hidden ml-3"
-                        value={filteredStatusValues}
-                        onChange={(e) => onStatusFiltering(e)}
-                        renderValue={() => 'Status'}
-                    >
-                        {statusValues.map((value) => (
-                            <MenuItem key={value} value={value}>
-                                <Checkbox checked={filteredStatusValues.includes(value)} />
-                                <ListItemText primary={value} />
-                            </MenuItem>
-                        ))}
-                    </Select>
-                    <img src={resetIcon} width={20} height={20} alt="reset icon" className="cursor-pointer flex ml-4" onClick={resetStatusFilter} />
-                </div>
+                <StatusFilter
+                    filteredStatusValues={filteredStatusValues}
+                    statusValues={statusValues}
+                    onStatusFiltering={onStatusFiltering}
+                    resetStatusFilter={resetStatusFilter}
+                />
 
-                <div className="flex mt-5 pr-4">
-                    <img src={resetIcon} width={20} height={20} alt="reset icon" className="cursor-pointer" onClick={resetColumnsVisibility} />
-                    <Select
-                        multiple
-                        className="h-7 overflow-hidden ml-3"
-                        value={visibleColumns}
-                        onChange={(e) => onSelectChange(e)}
-                        renderValue={() => 'Visibility'}
-                    >
-                        {creditsColumns.map((column) => (
-                            <MenuItem key={column.key} value={column.key}>
-                                <Checkbox checked={visibleColumns.includes(column.key)} />
-                                <ListItemText primary={column.key} />
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </div>
+                <ColumnsVisibility
+                    visibleColumns={visibleColumns}
+                    setVisibleColumns={setVisibleColumns}
+                    resetColumnsVisibility={resetColumnsVisibility}
+                />
             </div>
 
-            <table className="table-fixed w-full mt-5">
-                <CreditsTableHeader setSort={setSort} sortKey={sortKey} sortOrder={sortOrder} visibleColumns={visibleColumns} />
-                <tbody>
-                {paginatedCredits.map((credit) => <CreditsTableRow key={credit.id} credit={credit} visibleColumns={visibleColumns}/>)}
-                </tbody>
-            </table>
+            <CreditsTableView
+                paginatedCredits={paginatedCredits}
+                setSort={setSort}
+                sortKey={sortKey}
+                sortOrder={sortOrder}
+                visibleColumns={visibleColumns}
+            />
 
             <Pagination
                 page={page}
