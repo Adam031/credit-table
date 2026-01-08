@@ -6,7 +6,7 @@ type PaginationProps = {
     pageSizeVariants: Array<number>
     setPage: (page: number) => void
     setPageSize: (size: number) => void
-};
+}
 
 export const Pagination = ({page, pageSize, totalPages, totalItems, pageSizeVariants, setPage, setPageSize }: PaginationProps) => {
     if (totalPages <= 1) return null
