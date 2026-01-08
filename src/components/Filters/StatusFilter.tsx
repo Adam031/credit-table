@@ -1,23 +1,30 @@
-import resetIcon from "../../assets/reset.svg"
 import {Checkbox, ListItemText, MenuItem, Select} from "@mui/material"
 
 type Props = {
     filteredStatusValues: string[]
     statusValues: string[]
     onStatusFiltering: (values: string[]) => void
-    resetStatusFilter: () => void
 }
 
-export const StatusFilter = ({filteredStatusValues, statusValues, onStatusFiltering, resetStatusFilter} : Props) => {
+export const StatusFilter = ({filteredStatusValues, statusValues, onStatusFiltering} : Props) => {
+    const handleSelectedValues = (selected:string[]) => {
+        if (!selected.length) {
+            return <span className="text-gray-400">All statuses</span>
+        }
+
+        return selected.join(", ")
+    }
+
     return (
         <div className="flex mt-5">
             Filters:
             <Select
                 multiple
+                displayEmpty
                 className="h-7 overflow-hidden ml-3"
                 value={filteredStatusValues}
                 onChange={(e) => onStatusFiltering(e.target.value as string[])}
-                renderValue={() => 'Status'}
+                renderValue={(selected) => handleSelectedValues(selected)}
             >
                 {statusValues.map((value) => (
                     <MenuItem key={value} value={value}>
@@ -26,7 +33,6 @@ export const StatusFilter = ({filteredStatusValues, statusValues, onStatusFilter
                     </MenuItem>
                 ))}
             </Select>
-            <img src={resetIcon} width={20} height={20} alt="reset icon" className="cursor-pointer flex ml-4" onClick={resetStatusFilter} />
         </div>
     )
 }

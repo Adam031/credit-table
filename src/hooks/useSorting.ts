@@ -3,8 +3,8 @@ import {useMemo} from "react"
 import type {SetURLSearchParams} from "react-router-dom"
 
 type Props = {
-    sortKey: keyof Credit
-    sortOrder: "asc" | "desc"
+    sortKey: keyof Credit | null
+    sortOrder: "asc" | "desc" | null
     pageSize: number
     filteredStatusValues: string[]
     filteredCredits: Credit[]
@@ -14,18 +14,42 @@ type Props = {
 export const useSorting =
     ({sortKey, sortOrder, pageSize, filteredStatusValues, filteredCredits, setSearchParams}: Props) => {
 
-    const setSort = (key: keyof Credit) => {
-        const newOrder = sortKey === key && sortOrder === "asc" ? "desc" : "asc";
-        setSearchParams({
-            page: "1",
-            pageSize: String(pageSize),
-            sortKey: key,
-            sortOrder: newOrder,
-            status: filteredStatusValues
-        })
-    }
+        const setSort = (key: keyof Credit) => {
+            let nextKey: keyof Credit | null = key
+            let nextOrder: "asc" | "desc" | null = "asc"
+
+            if (sortKey !== key) {
+                nextOrder = "asc"
+            } else {
+                if (sortOrder === "asc") nextOrder = "desc"
+                else if (sortOrder === "desc") {
+                    nextOrder = null
+                    nextKey = null
+                } else {
+                    nextOrder = "asc"
+                }
+            }
+
+            setSearchParams({
+                page: "1",
+                pageSize: String(pageSize),
+                ...(nextKey && nextOrder
+                    ? {
+                        sortKey: nextKey,
+                        sortOrder: nextOrder,
+                    }
+                    : {}),
+                ...(filteredStatusValues.length
+                    ? { status: filteredStatusValues.join(",") }
+                    : {})
+            })
+        }
 
     const sortedCredits = useMemo(() => {
+        if (!sortKey || !sortOrder) {
+            return filteredCredits
+        }
+
         return [...filteredCredits].sort((a, b) => {
             let aValue = a[sortKey]
             let bValue = b[sortKey]
@@ -41,8 +65,20 @@ export const useSorting =
         })
     }, [filteredCredits, sortKey, sortOrder])
 
+
+    const resetSorting = () => {
+        setSearchParams({
+            page: "1",
+            pageSize: String(pageSize),
+            ...(filteredStatusValues.length
+                ? { status: filteredStatusValues.join(",") }
+                : {})
+        })
+    }
+
     return {
         sortedCredits,
-        setSort
+        setSort,
+        resetSorting
     }
 }

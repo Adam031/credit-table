@@ -1,11 +1,11 @@
 import type {Credit} from "../../mock-data/types.ts"
 import type {SetURLSearchParams} from "react-router-dom"
 import {creditsTablePaginationMock} from "../../mock-data/mock-data.ts"
-import {useMemo} from "react"
+import {useEffect, useMemo} from "react"
 
 type Props = {
-    sortKey: string
-    sortOrder: string
+    sortKey: string | null
+    sortOrder: string | null
     pageSize: number
     filteredCredits: Credit[]
     filteredStatusValues: string[]
@@ -19,24 +19,54 @@ export const usePagination =
 
     const pageSizeVariants = creditsTablePaginationMock.pageSizeVariants
 
-    const page = Number(searchParams.get("page") || "1")
+    const rawPage = Number(searchParams.get("page"))
+    const receivedPage = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1
 
     const totalItems = filteredCredits.length;
     const totalPages = Math.ceil(totalItems / pageSize)
+
+    const page = Math.min(receivedPage, totalPages || 1)
+
+    useEffect(() => {
+        if (rawPage !== page) {
+            setSearchParams({
+                page: String(page),
+                pageSize: String(pageSize),
+                ...(sortKey && sortOrder ? { sortKey, sortOrder } : {}),
+                ...(filteredStatusValues.length
+                    ? { status: filteredStatusValues.join(",") }
+                    : {}),
+            })
+        }
+    }, [rawPage, page])
 
     const setPageAndUpdateUrl = (newPage: number) => {
         setSearchParams({
             page: String(newPage),
             pageSize: String(pageSize),
-            sortKey,
-            sortOrder,
+            ...(sortKey && sortOrder
+                ? {
+                    sortKey,
+                    sortOrder,
+                }
+                : {}),
             status: filteredStatusValues.join(",")
         })
-    };
+    }
 
     const setPageSizeAndUpdateUrl = (newSize: number) => {
-        setSearchParams({page: "1", pageSize: String(newSize), sortKey, sortOrder, status: filteredStatusValues})
-    };
+        setSearchParams({
+            page: "1",
+            pageSize: String(newSize),
+            ...(sortKey && sortOrder
+                ? {
+                    sortKey,
+                    sortOrder,
+                }
+                : {}),
+            status: filteredStatusValues.join(",")
+        })
+    }
 
     const paginatedCredits = useMemo(() => {
         const start = (page - 1) * pageSize

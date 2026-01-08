@@ -7,7 +7,7 @@ type Props = {
     paginatedCredits: Credit[]
     setSort: (key: keyof Credit) => void
     sortKey: keyof Credit | null
-    sortOrder: string
+    sortOrder: string | null
     visibleColumns: string[]
 }
 

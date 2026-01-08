@@ -5,7 +5,7 @@ import {Preloader} from "../Preloader/Preloader.tsx"
 type Props = {
     setSort: (key: keyof Credit) => void
     sortKey: keyof Credit | null
-    sortOrder: string
+    sortOrder: string | null
     visibleColumns: string[]
 }
 
@@ -26,11 +26,16 @@ export const CreditsTableHeader = ({ setSort, sortKey, sortOrder, visibleColumns
                             {column.title}
                             {column.sortable && (
                                 <span className="ml-auto">
-                                    {sortKey === column.sortKey
-                                        ? sortOrder === "asc"
-                                            ? <span className="text-2xl text-black">↑</span>
-                                            : <span className="text-2xl text-black">↓</span>
-                                        : <span className="text-2xl text-gray-500">↑</span>}
+                                    {sortKey === column.sortKey ?
+                                        sortOrder === "asc" ?
+                                            <span className="text-2xl text-black">↑</span>
+                                        : sortOrder === "desc" ?
+                                            <span className="text-2xl text-black">↓</span>
+                                        :
+                                            <span className="text-2xl text-gray-400">↕</span>
+                                    :
+                                        <span className="text-2xl text-gray-500">↕</span>
+                                    }
                                 </span>
                             )}
                         </div>

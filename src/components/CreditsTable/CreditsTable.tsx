@@ -17,8 +17,8 @@ export const CreditsTable = () => {
 
     const [searchParams, setSearchParams] = useSearchParams()
 
-    const sortKey = searchParams.get("sortKey") as keyof Credit || "id"
-    const sortOrder = (searchParams.get("sortOrder") as "asc" | "desc") || "asc"
+    const sortKey = searchParams.get("sortKey") as keyof Credit | null
+    const sortOrder = searchParams.get("sortOrder") as "asc" | "desc" | null
     const pageSize = Number(searchParams.get("pageSize") || creditsTablePaginationMock.pageSize)
 
     const {visibleColumns, setVisibleColumns, reset: resetColumnsVisibility} =
@@ -32,7 +32,7 @@ export const CreditsTable = () => {
         resetStatusFilter
     } = useStatusFilter({sortKey, sortOrder, pageSize, searchParams, setSearchParams})
 
-    const {sortedCredits, setSort} =
+    const {sortedCredits, setSort, resetSorting} =
         useSorting({sortKey, sortOrder, pageSize, filteredStatusValues, filteredCredits, setSearchParams})
 
     const {
@@ -45,6 +45,12 @@ export const CreditsTable = () => {
         setPageSizeAndUpdateUrl
     } = usePagination({sortKey, sortOrder, pageSize, filteredStatusValues, filteredCredits, sortedCredits, searchParams, setSearchParams})
 
+    const resetAllFilters = () => {
+        resetColumnsVisibility()
+        resetStatusFilter()
+        resetSorting()
+    }
+
     return (
         <>
             <div className="flex justify-between w-full pl-4">
@@ -52,13 +58,12 @@ export const CreditsTable = () => {
                     filteredStatusValues={filteredStatusValues}
                     statusValues={statusValues}
                     onStatusFiltering={onStatusFiltering}
-                    resetStatusFilter={resetStatusFilter}
                 />
 
                 <ColumnsVisibility
                     visibleColumns={visibleColumns}
                     setVisibleColumns={setVisibleColumns}
-                    resetColumnsVisibility={resetColumnsVisibility}
+                    resetAllFilters={resetAllFilters}
                 />
             </div>
 

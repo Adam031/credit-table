@@ -5,13 +5,13 @@ import {creditsColumns} from "../CreditsTable/columns.tsx"
 type Props = {
     visibleColumns: string[]
     setVisibleColumns: (columns: string[]) => void
-    resetColumnsVisibility: () => void
+    resetAllFilters: () => void
 }
 
-export const ColumnsVisibility = ({visibleColumns, setVisibleColumns, resetColumnsVisibility} : Props) => {
+export const ColumnsVisibility = ({visibleColumns, setVisibleColumns, resetAllFilters} : Props) => {
     return (
         <div className="flex mt-5 pr-4">
-            <img src={resetIcon} width={20} height={20} alt="reset icon" className="cursor-pointer" onClick={resetColumnsVisibility} />
+            <img src={resetIcon} width={20} height={20} alt="reset icon" className="cursor-pointer" onClick={resetAllFilters} />
             <Select
                 multiple
                 className="h-7 overflow-hidden ml-3"
