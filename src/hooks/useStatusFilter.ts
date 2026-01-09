@@ -1,17 +1,18 @@
 import {useMemo, useState} from "react"
-import {creditsMock} from "../mock-data/mock-data.ts"
 import type {SetURLSearchParams} from "react-router-dom"
+import type {Credit} from "../mock-data/types.ts"
 
 type Props = {
     sortKey: string | null
     sortOrder: string | null
     pageSize: number
+    credits: Credit[]
     searchParams: URLSearchParams
     setSearchParams: SetURLSearchParams
 }
 
 export const useStatusFilter =
-    ({sortKey, sortOrder, pageSize, searchParams, setSearchParams}: Props) => {
+    ({sortKey, sortOrder, pageSize, credits, searchParams, setSearchParams}: Props) => {
 
     const statusValues = ['new', 'active', 'paid']
     const statusFromUrl = searchParams.get("status")
@@ -40,8 +41,8 @@ export const useStatusFilter =
     }
 
     const filteredCredits = useMemo(() => {
-        if (!filteredStatusValues.length) return creditsMock
-        return creditsMock.filter(credit =>
+        if (!filteredStatusValues.length) return credits
+        return credits.filter(credit =>
             filteredStatusValues.includes(credit.status)
         )
     }, [filteredStatusValues])

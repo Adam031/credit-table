@@ -1,20 +1,21 @@
-import {creditsMock, creditsTablePaginationMock} from "../../mock-data/mock-data.ts";
+import {creditsTablePaginationMock} from "../../mock-data/mock-data.ts";
 import {Pagination} from "../Pagination/Pagination.tsx";
 import {useSearchParams} from "react-router-dom";
 import type {Credit} from "../../mock-data/types.ts"
 import {creditsColumns} from "./columns.tsx"
-import {Preloader} from "../Preloader/Preloader.tsx"
 import {StatusFilter} from "../Filters/StatusFilter.tsx"
 import {ColumnsVisibility} from "../Filters/ColumnsVisibility.tsx"
 import {CreditsTableView} from "./CreditsTableView.tsx"
 import {useColumnVisibility} from "../../hooks/useColumnVisibility.ts"
 import {useStatusFilter} from "../../hooks/useStatusFilter.ts"
 import {useSorting} from "../../hooks/useSorting.ts"
-import {usePagination} from "../hooks/usePagination.ts"
+import {usePagination} from "../../hooks/usePagination.ts"
 
-export const CreditsTable = () => {
-    if (!creditsMock.length) return <Preloader/>
+type Props = {
+    credits: Credit[]
+}
 
+export const CreditsTable = ({credits}:Props) => {
     const [searchParams, setSearchParams] = useSearchParams()
 
     const sortKey = searchParams.get("sortKey") as keyof Credit | null
@@ -30,7 +31,7 @@ export const CreditsTable = () => {
         statusValues,
         onStatusFiltering,
         resetStatusFilter
-    } = useStatusFilter({sortKey, sortOrder, pageSize, searchParams, setSearchParams})
+    } = useStatusFilter({sortKey, sortOrder, pageSize, credits, searchParams, setSearchParams})
 
     const {sortedCredits, setSort, resetSorting} =
         useSorting({sortKey, sortOrder, pageSize, filteredStatusValues, filteredCredits, setSearchParams})
