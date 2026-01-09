@@ -1,4 +1,4 @@
-import type {Credit} from "../mock-data/types.ts"
+import type {Credit} from "../../../mock-data/types.ts"
 import {useMemo} from "react"
 import type {SetURLSearchParams} from "react-router-dom"
 

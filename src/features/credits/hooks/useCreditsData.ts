@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react"
-import {creditsMock} from "../mock-data/mock-data.ts"
-import type {Credit} from "../mock-data/types.ts"
+import {creditsMock} from "../../../mock-data/mock-data.ts"
+import type {Credit} from "../../../mock-data/types.ts"
 
 export const useCreditsData = () => {
     const [credits, setCredits] = useState<Credit[]>([])

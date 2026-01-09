@@ -1,6 +1,6 @@
-import type {Credit} from "../mock-data/types.ts"
+import type {Credit} from "../../../mock-data/types.ts"
 import type {SetURLSearchParams} from "react-router-dom"
-import {creditsTablePaginationMock} from "../mock-data/mock-data.ts"
+import {creditsTablePaginationMock} from "../../../mock-data/mock-data.ts"
 import {useEffect, useMemo} from "react"
 
 type Props = {

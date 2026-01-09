@@ -1,23 +1,21 @@
-import {creditsColumns} from "./columns.tsx";
+import {type Column} from "../../features/credits/ui/columns/columns.tsx";
 import type {Credit} from "../../mock-data/types.ts"
-import {Preloader} from "../Preloader/Preloader.tsx"
+import {Preloader} from "../ui/Preloader/Preloader.tsx"
 
 type Props = {
+    columns: Column<Credit>[]
     setSort: (key: keyof Credit) => void
     sortKey: keyof Credit | null
     sortOrder: string | null
-    visibleColumns: string[]
 }
 
-export const CreditsTableHeader = ({ setSort, sortKey, sortOrder, visibleColumns } : Props) => {
-    if (!creditsColumns.length) return <Preloader />
+export const TableHeader = ({columns, setSort, sortKey, sortOrder } : Props) => {
+    if (!columns.length) return <Preloader />
 
     return (
         <thead className="border-t border-b border-gray-300">
             <tr>
-                {creditsColumns
-                    .filter(column => visibleColumns.includes(column.key))
-                    .map((column) => (
+                {columns.map((column) => (
                     <th key={column.key}
                         className="py-3 px-4 text-[15px] text-left border-r text-gray-700 font-medium border-gray-200"
                         onClick={() => column.sortable && setSort(column.sortKey!)}

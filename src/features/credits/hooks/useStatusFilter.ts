@@ -1,6 +1,6 @@
 import {useMemo, useState} from "react"
 import type {SetURLSearchParams} from "react-router-dom"
-import type {Credit} from "../mock-data/types.ts"
+import type {Credit} from "../../../mock-data/types.ts"
 
 type Props = {
     sortKey: string | null

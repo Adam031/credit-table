@@ -1,6 +1,6 @@
 import {Checkbox, ListItemText, MenuItem, Select} from "@mui/material"
-import resetIcon from '../../assets/reset.svg'
-import {creditsColumns} from "../CreditsTable/columns.tsx"
+import resetIcon from '../../../../assets/reset.svg'
+import {creditsColumns} from "../columns/columns.tsx"
 
 type Props = {
     visibleColumns: string[]

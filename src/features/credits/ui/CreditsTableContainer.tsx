@@ -1,21 +1,21 @@
-import {creditsTablePaginationMock} from "../../mock-data/mock-data.ts";
-import {Pagination} from "../Pagination/Pagination.tsx";
+import {creditsTablePaginationMock} from "../../../mock-data/mock-data.ts";
+import {Pagination} from "../../../shared/ui/Pagination/Pagination.tsx";
 import {useSearchParams} from "react-router-dom";
-import type {Credit} from "../../mock-data/types.ts"
-import {creditsColumns} from "./columns.tsx"
-import {StatusFilter} from "../Filters/StatusFilter.tsx"
-import {ColumnsVisibility} from "../Filters/ColumnsVisibility.tsx"
-import {CreditsTableView} from "./CreditsTableView.tsx"
-import {useColumnVisibility} from "../../hooks/useColumnVisibility.ts"
-import {useStatusFilter} from "../../hooks/useStatusFilter.ts"
-import {useSorting} from "../../hooks/useSorting.ts"
-import {usePagination} from "../../hooks/usePagination.ts"
+import type {Credit} from "../../../mock-data/types.ts"
+import {useColumnVisibility} from "../hooks/useColumnVisibility.ts"
+import {useStatusFilter} from "../hooks/useStatusFilter.ts"
+import {useSorting} from "../hooks/useSorting.ts"
+import {usePagination} from "../../../shared/ui/Pagination/usePagination.ts"
+import {creditsColumns} from "./columns/columns.tsx"
+import {StatusFilter} from "./filters/StatusFilter.tsx"
+import {ColumnsVisibility} from "./filters/ColumnsVisibility.tsx"
+import {Table} from "../../../shared/table/Table.tsx"
 
 type Props = {
     credits: Credit[]
 }
 
-export const CreditsTable = ({credits}:Props) => {
+export const CreditsTableContainer = ({credits}:Props) => {
     const [searchParams, setSearchParams] = useSearchParams()
 
     const sortKey = searchParams.get("sortKey") as keyof Credit | null
@@ -68,12 +68,12 @@ export const CreditsTable = ({credits}:Props) => {
                 />
             </div>
 
-            <CreditsTableView
-                paginatedCredits={paginatedCredits}
+            <Table
+                rows={paginatedCredits}
+                columns={creditsColumns.filter(c => visibleColumns.includes(c.key))}
                 setSort={setSort}
                 sortKey={sortKey}
                 sortOrder={sortOrder}
-                visibleColumns={visibleColumns}
             />
 
             <Pagination

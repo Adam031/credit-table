@@ -1,12 +1,12 @@
 import type {ReactNode} from 'react'
-import type {Credit} from "../../mock-data/types.ts";
-import {Client} from "./CreditsTableRowColumns/Client.tsx";
-import {CreatedDate} from "./CreditsTableRowColumns/CreatedDate.tsx";
-import {TotalLimit} from "./CreditsTableRowColumns/TotalLimit.tsx";
-import {UsedLimit} from "./CreditsTableRowColumns/UsedLimit.tsx";
-import {Penalty} from "./CreditsTableRowColumns/Penalty.tsx";
-import {DebtAmount} from "./CreditsTableRowColumns/DebtAmount.tsx";
-import {Status} from "./CreditsTableRowColumns/Status.tsx";
+import type {Credit} from "../../../../mock-data/types.ts";
+import {Client} from "./Client.tsx";
+import {CreatedDate} from "./CreatedDate.tsx";
+import {TotalLimit} from "./TotalLimit.tsx";
+import {UsedLimit} from "./UsedLimit.tsx";
+import {Penalty} from "./Penalty.tsx";
+import {DebtAmount} from "./DebtAmount.tsx";
+import {Status} from "./Status.tsx";
 
 export type Column<T> = {
     key: string

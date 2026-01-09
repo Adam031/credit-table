@@ -1,5 +1,5 @@
 import type {FC} from "react"
-import type {ClientType} from "../../../mock-data/types.ts"
+import type {ClientType} from "../../../../mock-data/types.ts"
 
 type Props = {
     client: ClientType

@@ -1,7 +1,11 @@
-import {creditsMock} from "../../mock-data/mock-data.ts";
+import type {Credit} from "../../mock-data/types.ts"
 
-export const CreditsTableTitle = () => {
-    const creditsCount = creditsMock.length
+type Props = {
+    credits: Credit[]
+}
+
+export const CreditsPageTitle = ({credits}:Props) => {
+    const creditsCount = credits.length
 
     return (
         <div className="pt-4 px-4">
